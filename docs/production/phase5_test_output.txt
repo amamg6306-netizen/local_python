@@ -1,0 +1,219 @@
+== PHP syntax lint ==
+PASS: 90 PHP files linted
+== Phase 5 static performance/reliability controls ==
+PASS checks: 71
+  PASS: provider/available-requirements.php has bounded pagination
+  PASS: provider/available-requirements.php uses per+1 bounded next-page detection
+  PASS: provider/requests.php has bounded pagination
+  PASS: provider/requests.php uses per+1 bounded next-page detection
+  PASS: customer/requests.php has bounded pagination
+  PASS: customer/requests.php uses per+1 bounded next-page detection
+  PASS: search.php has bounded pagination
+  PASS: search.php uses per+1 bounded next-page detection
+  PASS: reviews.php has bounded pagination
+  PASS: reviews.php uses per+1 bounded next-page detection
+  PASS: favorites.php has bounded pagination
+  PASS: favorites.php uses per+1 bounded next-page detection
+  PASS: provider/portfolio.php has bounded pagination
+  PASS: provider/portfolio.php uses per+1 bounded next-page detection
+  PASS: admin/users.php has bounded pagination
+  PASS: admin/users.php uses per+1 bounded next-page detection
+  PASS: admin/providers.php has bounded pagination
+  PASS: admin/providers.php uses per+1 bounded next-page detection
+  PASS: admin/businesses.php has bounded pagination
+  PASS: admin/businesses.php uses per+1 bounded next-page detection
+  PASS: admin/reviews.php has bounded pagination
+  PASS: admin/reviews.php uses per+1 bounded next-page detection
+  PASS: admin/reports.php has bounded pagination
+  PASS: admin/reports.php uses per+1 bounded next-page detection
+  PASS: admin/services.php has bounded pagination
+  PASS: admin/services.php uses per+1 bounded next-page detection
+  PASS: provider/services.php has bounded pagination
+  PASS: provider/services.php uses per+1 bounded next-page detection
+  PASS: business/services.php has bounded pagination
+  PASS: business/services.php uses per+1 bounded next-page detection
+  PASS: admin/advertisements.php has bounded pagination
+  PASS: admin/advertisements.php uses per+1 bounded next-page detection
+  PASS: provider/available-requirements.php avoids broad service_request row fetch
+  PASS: provider/requests.php avoids broad service_request row fetch
+  PASS: customer/requests.php avoids broad service_request row fetch
+  PASS: request duration/peak-memory telemetry available behind opt-in flag
+  PASS: performance log does not capture QUERY_STRING
+  PASS: performance log does not capture HTTP_COOKIE
+  PASS: performance log does not capture user_id
+  PASS: performance log does not capture $_GET
+  PASS: performance log does not capture $_POST
+  PASS: performance log has bounded rotation logic
+  PASS: image decode checks available memory before GD allocation
+  PASS: image decode streams from temporary file with format-specific decoder
+  PASS: image re-encode no longer copies entire encoded upload into a PHP string
+  PASS: safe session lock release helper exists
+  PASS: provider/available-requirements.php releases session lock on read-heavy path
+  PASS: provider/requests.php releases session lock on read-heavy path
+  PASS: customer/requests.php releases session lock on read-heavy path
+  PASS: search.php releases session lock on read-heavy path
+  PASS: performance migration includes idx_sr_provider_created
+  PASS: performance migration includes idx_sr_business_created
+  PASS: performance migration includes idx_sr_customer_created
+  PASS: performance migration includes idx_sr_requirement_feed
+  PASS: performance migration includes idx_reviews_customer_created
+  PASS: performance migration includes idx_reviews_target_created
+  PASS: bounded reconciliation queue schema exists
+  PASS: reconciliation enqueue checks a configured queue cap
+  PASS: worker batch and retry count are bounded
+  PASS: worker has terminal dead state and scheduled retry backoff
+  PASS: failed webhook reconciliation can be queued and processed
+  PASS: gateway retry remains fail-safe when recovery queue is unavailable/full
+  PASS: reconciliation worker is CLI-only and invokes bounded batch
+  PASS: .env.example documents PAGINATION_MAX_PAGE
+  PASS: .env.example documents PERF_METRICS_ENABLED
+  PASS: .env.example documents PERF_TARGET_P95_MS
+  PASS: .env.example documents PERF_TARGET_PEAK_MB
+  PASS: .env.example documents PAYMENT_WORKER_BATCH_MAX
+  PASS: .env.example documents PAYMENT_WORKER_MAX_ATTEMPTS
+  PASS: .env.example documents PAYMENT_RECONCILIATION_QUEUE_MAX
+  PASS: .env.example documents PERF_MIN_SAMPLES
+FAIL checks: 0
+== Phase 5 memory buffering proxy ==
+{
+  "unbounded_proxy": {
+    "mode": "unbounded",
+    "rows": 20000,
+    "peak_bytes": 35651584,
+    "end_bytes": 35651584,
+    "checksum": 12400000
+  },
+  "bounded_proxy": {
+    "mode": "bounded",
+    "rows": 25,
+    "peak_bytes": 2097152,
+    "end_bytes": 2097152,
+    "checksum": 15500
+  },
+  "peak_ratio": 17.0
+}
+PASS: bounded buffering proxy uses less peak memory
+== Phase 4 payment regressions ==
+PASS: money converted to minor units exactly
+PASS: minor units converted to decimal exactly
+PASS: money rejects >2 decimals
+PASS: server price/tax snapshot math
+PASS: Razorpay callback signature accepted
+PASS: bad callback signature rejected
+PASS: webhook HMAC accepted
+PASS: bad webhook HMAC rejected
+PASS: live key blocked while PAYMENT_ALLOW_LIVE=false
+PASS: live credential guard throws
+PASS: checkout token stored only as hash
+PASS checks: 37
+  PASS: start denies customer/admin self-checkout
+  PASS: method page denies customer/admin self-checkout
+  PASS: select method denies customer/admin self-checkout
+  PASS: gateway denies customer/admin self-checkout
+  PASS: return denies customer/admin self-checkout
+  PASS: manual denies customer/admin self-checkout
+  PASS: plan id is server-validated for role
+  PASS: client amount is not trusted; immutable server snapshots are used
+  PASS: checkout token is hashed in database
+  PASS: selected method is rechecked active and role-appropriate server-side
+  PASS: payment stores immutable method/instruction snapshots
+  PASS: server creates Razorpay order with allowlisted official API endpoint
+  PASS: browser uses Razorpay hosted checkout
+  PASS: LocalConnect checkout has no cvv input
+  PASS: LocalConnect checkout has no cvc input
+  PASS: LocalConnect checkout has no card_number input
+  PASS: LocalConnect checkout has no card input
+  PASS: browser return verifies signature but cannot mark paid/activate
+  PASS: webhook is explicitly CSRF-exempt and signature-authenticated
+  PASS: webhook HMAC covers exact raw body
+  PASS: webhook replay/idempotency constraint exists
+  PASS: unique external gateway identifiers enforced
+  PASS: captured event requires server-side API reconciliation of payment and order
+  PASS: entitlement follows reconciled paid state
+  PASS: ambiguous gateway failures are not blindly retried/charged
+  PASS: manual payment has explicit admin review workflow
+  PASS: manual/gateway admin reconciliation requires MFA, reauth and CSRF
+  PASS: manual reference is not treated as proof/auto-entitlement
+  PASS: dispute event suspends entitlement for review
+  PASS: full/partial refund states handled distinctly
+  PASS: live payments default disabled
+  PASS: subscription pages use correct role audiences
+  PASS: user payment history is paginated
+  PASS: admin payment ledger is paginated
+  PASS: PAYMENT_RAZORPAY_KEY_SECRET not rendered by checkout/admin payment detail
+  PASS: PAYMENT_RAZORPAY_WEBHOOK_SECRET not rendered by checkout/admin payment detail
+  PASS: forward migration does not drop Phase 4 data tables
+FAIL checks: 0
+== Phase 3 regressions ==
+PASS: valid UPI ID accepted
+PASS: URL is not accepted as UPI ID
+PASS: invalid UPI ID rejected
+PASS: INR normalization
+PASS: unsupported currency rejected
+PASS: gateway incomplete without server secrets
+PASS: gateway configured when all required environment values exist
+PASS: gateway status never returns secret values
+PASS: audit snapshot excludes unapproved secret/card fields
+PASS: manual UPI configuration check
+PASS: manual bank configuration check
+PASS checks: 21
+  PASS: payment-method changes require admin MFA
+  PASS: payment-method changes require recent password re-authentication
+  PASS: payment-method form has CSRF protection
+  PASS: server-side method type allowlist exists
+  PASS: server-side audience allowlist exists
+  PASS: gateway is allowlisted and no arbitrary redirect URL field is accepted
+  PASS: admin form does not request card
+  PASS: admin form does not request cvv
+  PASS: admin form does not request cvc
+  PASS: admin form does not request gateway_secret
+  PASS: admin form does not request api_key
+  PASS: admin form does not request webhook_secret
+  PASS: gateway secret placeholder documented in environment template
+  PASS: gateway UI receives masked configured/missing indicators only
+  PASS: new checkout helper returns only active role-appropriate methods
+  PASS: admin method changes never mark or create payments
+  PASS: versioned migration creates method and audit tables
+  PASS: payments retain immutable method snapshot fields for later checkout
+  PASS: forward migration does not drop application tables
+  PASS: admin navigation exposes payment-method management
+  PASS: admin listing states secret handling boundary
+FAIL checks: 0
+== Phase 2 security regressions ==
+PASS: base32 round trip
+PASS: TOTP format
+PASS: TOTP deterministic for same step
+PASS: secret encrypt/decrypt round trip
+PASS: safe admin return allowed
+PASS: external return rejected
+PASS: length validation
+PASS: production DB no hard-coded root constant
+PASS: production config fail-closed checks
+PASS: business plan audience fixed
+PASS: login throttling implemented
+PASS: session idle+absolute timeout implemented
+PASS: logout is POST+CSRF
+PASS: MFA secret encrypted
+PASS: password reset token is hashed
+PASS: fresh SQL contains no localconnect.test demo users
+PASS: fresh SQL contains no DROP TABLE
+PASS: upload dimensions/pixels checked
+PASS: upload path folder allowlist
+PASS: production env example has placeholders only
+PASS: POST CSRF coverage — 37/37 handlers; missing=[]
+RESULT: 14 pass / 0 fail
+== Baseline security scanner ==
+PASS checks: 9
+  PASS: detected 30 POST handlers
+  PASS: all 30 detected POST handlers have CSRF validation
+  PASS: login uses password_verify
+  PASS: login rotates the session id
+  PASS: registration uses password_hash
+  PASS: PDO emulated prepares are disabled
+  PASS: session cookie has HttpOnly and SameSite settings
+  PASS: uploads use MIME inspection and random server filenames
+  PASS: provider plan audience filter is provider/both
+WARN findings: 2
+  WARN: HSTS is not emitted by the application
+  WARN: CSP is not emitted by the application
+FAIL checks: 0

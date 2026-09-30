@@ -1,0 +1,30 @@
+LocalConnect Production Hardening — Phase 1
+Date: 2026-09-24
+Status: NOT READY FOR LIVE PAYMENTS
+
+Input archive SHA-256:
+74026f8755030010685506b92e7ab622ac14309697162d5f85a59acaf8610dc4  localconnect(1).zip
+
+Application source behavior changes in Phase 1: NONE
+Verified by diff against a fresh extraction: only docs/, tests/, and tools/ are added.
+
+Added audit/test artifacts:
+- docs/production/PHASE1_INVENTORY_THREAT_MODEL.md
+- docs/production/PHASE1_TEST_BASELINE.md
+- docs/production/PHASE1_BROWSER_TEST_MATRIX.md
+- docs/production/route_inventory.csv
+- docs/production/phase1_findings.json
+- docs/production/phase1_baseline_output.txt
+- docs/production/README.md
+- tests/phase1/php_helper_smoke.php
+- tests/phase1/static_security_baseline.py
+- tests/phase1/http_header_smoke.sh
+- tests/phase1/run_baseline.sh
+- tools/phase1_inventory.py
+
+Automated baseline result:
+- PHP syntax lint: PASS
+- Helper smoke: PASS (6 checks)
+- Static security baseline: 9 PASS / 19 WARN / 0 FAIL
+- HTTP/header smoke: PASS
+- DB-backed integration: SKIPPED (pdo_mysql/MySQL unavailable in audit container)

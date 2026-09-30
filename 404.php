@@ -1,0 +1,2 @@
+<?php $pageTitle='Page not found — LocalConnect'; require __DIR__.'/includes/header.php'; ?>
+<div class="container py-5"><div class="soft-card p-5 text-center"><div class="display-3">404</div><h2>Page not found</h2><p class="text-muted">The page you requested does not exist.</p><a class="btn btn-primary" href="<?=e(base_url())?>">Go home</a></div></div><?php require __DIR__.'/includes/footer.php'; ?>

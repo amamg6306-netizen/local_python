@@ -1,0 +1,13 @@
+<?php
+declare(strict_types=1);
+require_once __DIR__.'/../includes/auth.php';
+require_once __DIR__.'/../includes/billing.php';
+$u=require_role('business');
+$sub=ensure_free_subscription((int)$u['id']);
+$q=db()->prepare("SELECT * FROM subscription_plans WHERE is_active=1 AND audience IN ('business','both') ORDER BY price_monthly,id");$q->execute();$plans=$q->fetchAll();
+$pageTitle='Subscription — LocalConnect';require __DIR__.'/../includes/header.php';
+?>
+<div class="container py-5"><div class="d-flex flex-wrap justify-content-between align-items-start gap-3 mb-4"><div><h1 class="fw-bold mb-1">Business subscription</h1><p class="text-muted mb-0">Current plan: <strong><?=e($sub['plan_name']??ucfirst((string)($sub['plan']??'free')))?></strong></p></div><a class="btn btn-outline-secondary" href="<?=e(base_url('billing/history.php'))?>">Billing history</a></div>
+<div class="alert alert-info">Only business-eligible plans are shown. Prices are fixed on the server before checkout; client-side amount changes cannot change the payment record.</div>
+<div class="row g-4"><?php foreach($plans as $p):$price=plan_price_breakdown($p);$current=((string)($sub['plan']??'free')===(string)$p['code']);?><div class="col-md-4"><div class="card h-100 shadow-sm border-0"><div class="card-body d-flex flex-column"><h3><?=e($p['name'])?></h3><div class="display-6">₹<?=number_format((float)$price['subtotal'],2)?><small class="fs-6"> / <?=$price['billing_period_months']?> month<?=$price['billing_period_months']===1?'':'s'?></small></div><p class="text-muted"><?=e((string)$p['description'])?></p><ul class="small"><li>Featured listing: <?=number_format((int)$p['featured_days'])?> day(s)</li><li>Lead allowance: <?=is_null($p['lead_limit'])?'Unlimited':number_format((int)$p['lead_limit'])?></li><li><?=e($price['tax_label'])?>: ₹<?=number_format((float)$price['tax'],2)?></li><li><strong>Total: ₹<?=number_format((float)$price['total'],2)?> INR</strong></li></ul><div class="mt-auto"><?php if($current):?><button class="btn btn-outline-secondary w-100" disabled>Current plan</button><?php elseif($price['total_minor']<=0):?><button class="btn btn-outline-secondary w-100" disabled>Free plan — no payment required</button><?php else:?><form method="post" action="<?=e(base_url('billing/start.php'))?>"><?=csrf_field()?><input type="hidden" name="plan_id" value="<?=(int)$p['id']?>"><button class="btn btn-primary w-100">Get Subscription</button></form><?php endif;?></div></div></div></div><?php endforeach;?></div></div>
+<?php require __DIR__.'/../includes/footer.php';?>

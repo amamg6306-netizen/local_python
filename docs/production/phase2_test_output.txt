@@ -1,0 +1,58 @@
+== PHP lint ==
+PHP linted: 69; status=PASS
+== Phase 2 helper tests ==
+PASS: base32 round trip
+PASS: TOTP format
+PASS: TOTP deterministic for same step
+PASS: secret encrypt/decrypt round trip
+PASS: safe admin return allowed
+PASS: external return rejected
+PASS: length validation
+== Phase 2 static security tests ==
+PASS: production DB no hard-coded root constant
+PASS: production config fail-closed checks
+PASS: business plan audience fixed
+PASS: login throttling implemented
+PASS: session idle+absolute timeout implemented
+PASS: logout is POST+CSRF
+PASS: MFA secret encrypted
+PASS: password reset token is hashed
+PASS: fresh SQL contains no localconnect.test demo users
+PASS: fresh SQL contains no DROP TABLE
+PASS: upload dimensions/pixels checked
+PASS: upload path folder allowlist
+PASS: production env example has placeholders only
+PASS: POST CSRF coverage — 29/29 handlers; missing=[]
+RESULT: 14 pass / 0 fail
+== Phase 1 regression baseline ==
+== PHP syntax lint ==
+PASS: PHP syntax lint
+== PHP helper smoke ==
+PASS: helper smoke tests (6 checks)
+== Static security baseline ==
+PASS checks: 9
+  PASS: detected 27 POST handlers
+  PASS: all 27 detected POST handlers have CSRF validation
+  PASS: login uses password_verify
+  PASS: login rotates the session id
+  PASS: registration uses password_hash
+  PASS: PDO emulated prepares are disabled
+  PASS: session cookie has HttpOnly and SameSite settings
+  PASS: uploads use MIME inspection and random server filenames
+  PASS: provider plan audience filter is provider/both
+WARN findings: 7
+  WARN: subscription purchase buttons are disabled; no checkout exists
+  WARN: no payment webhook implementation detected
+  WARN: HSTS is not emitted by the application
+  WARN: CSP is not emitted by the application
+  WARN: provider/available-requirements.php performs an unbounded fetchAll()
+  WARN: provider/requests.php performs an unbounded fetchAll()
+  WARN: customer/requests.php performs an unbounded fetchAll()
+FAIL checks: 0
+== HTTP/header smoke == 
+PASS: public-page HTTP/header smoke (about.php)
+== Runtime dependency check ==
+PHP 8.4.23
+PDO drivers: 
+SKIP: pdo_mysql is unavailable in this audit container, so DB-backed/browser tests are not claimed.
+NOTE: Phase 1 warning assertions describe the pre-Phase-2 baseline and are expected to remain as historical output.

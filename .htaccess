@@ -1,0 +1,16 @@
+Options -Indexes -MultiViews
+DirectoryIndex index.php
+ErrorDocument 404 /localconnect/404.php
+
+# Block configuration, source metadata, deployment artefacts and backup files.
+<FilesMatch "(^\.|\.env(?:\..*)?$|composer\.(?:json|lock)$|phpunit\.xml.*$|.*\.(?:sql|md|log|ini|bak|old|orig|dist|sh|py)$)">
+  Require all denied
+</FilesMatch>
+
+<IfModule mod_headers.c>
+  Header always unset X-Powered-By
+  Header always set X-Content-Type-Options "nosniff"
+  Header always set X-Frame-Options "DENY"
+  Header always set Referrer-Policy "strict-origin-when-cross-origin"
+  Header always set X-Permitted-Cross-Domain-Policies "none"
+</IfModule>

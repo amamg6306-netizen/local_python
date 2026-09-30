@@ -1,0 +1,816 @@
+{
+  "tables": {
+    "admin_mfa": {
+      "checks": [],
+      "columns": [
+        "user_id",
+        "secret_ciphertext",
+        "secret_nonce",
+        "encryption_alg",
+        "enabled_at",
+        "last_used_step",
+        "last_verified_at",
+        "created_at",
+        "updated_at"
+      ],
+      "foreign_keys": [
+        "fk_admin_mfa_user"
+      ],
+      "indexes": [],
+      "unique_constraints": []
+    },
+    "advertisements": {
+      "checks": [],
+      "columns": [
+        "id",
+        "title",
+        "description",
+        "image",
+        "target_url",
+        "placement",
+        "budget",
+        "impressions",
+        "clicks",
+        "status",
+        "starts_at",
+        "ends_at",
+        "created_by",
+        "sponsor_user_id",
+        "created_at",
+        "updated_at"
+      ],
+      "foreign_keys": [
+        "fk_ad_admin",
+        "fk_ad_sponsor"
+      ],
+      "indexes": [
+        "idx_ads_status"
+      ],
+      "unique_constraints": []
+    },
+    "auth_rate_limits": {
+      "checks": [],
+      "columns": [
+        "bucket_hash",
+        "attempts",
+        "window_started_at",
+        "blocked_until",
+        "updated_at"
+      ],
+      "foreign_keys": [],
+      "indexes": [
+        "idx_auth_rate_blocked"
+      ],
+      "unique_constraints": []
+    },
+    "auth_tokens": {
+      "checks": [],
+      "columns": [
+        "id",
+        "user_id",
+        "purpose",
+        "selector",
+        "token_hash",
+        "expires_at",
+        "used_at",
+        "requested_ip_hash",
+        "created_at"
+      ],
+      "foreign_keys": [
+        "fk_auth_token_user"
+      ],
+      "indexes": [
+        "idx_auth_token_expiry",
+        "idx_auth_token_user"
+      ],
+      "unique_constraints": [
+        "uq_auth_token_selector"
+      ]
+    },
+    "business_profiles": {
+      "checks": [],
+      "columns": [
+        "id",
+        "user_id",
+        "category_id",
+        "business_name",
+        "slug",
+        "logo",
+        "description",
+        "address",
+        "phone",
+        "opening_time",
+        "closing_time",
+        "price_min",
+        "price_max",
+        "website",
+        "social_links",
+        "verification_status",
+        "verified_at",
+        "is_featured",
+        "profile_views",
+        "created_at",
+        "updated_at"
+      ],
+      "foreign_keys": [
+        "fk_business_category",
+        "fk_business_user"
+      ],
+      "indexes": [
+        "idx_business_name",
+        "idx_business_verify"
+      ],
+      "unique_constraints": []
+    },
+    "categories": {
+      "checks": [],
+      "columns": [
+        "id",
+        "name",
+        "slug",
+        "icon",
+        "description",
+        "is_active",
+        "created_at",
+        "updated_at"
+      ],
+      "foreign_keys": [],
+      "indexes": [
+        "idx_categories_active"
+      ],
+      "unique_constraints": []
+    },
+    "checkout_intents": {
+      "checks": [],
+      "columns": [
+        "id",
+        "token_hash",
+        "user_id",
+        "user_role",
+        "plan_id",
+        "plan_code_snapshot",
+        "plan_name_snapshot",
+        "currency",
+        "subtotal_amount",
+        "tax_amount",
+        "total_amount",
+        "billing_period_months",
+        "status",
+        "payment_id",
+        "expires_at",
+        "created_at",
+        "updated_at"
+      ],
+      "foreign_keys": [
+        "fk_checkout_payment",
+        "fk_checkout_plan",
+        "fk_checkout_user"
+      ],
+      "indexes": [
+        "idx_checkout_expiry",
+        "idx_checkout_plan",
+        "idx_checkout_user"
+      ],
+      "unique_constraints": [
+        "uq_checkout_token"
+      ]
+    },
+    "favorites": {
+      "checks": [],
+      "columns": [
+        "id",
+        "customer_id",
+        "target_user_id",
+        "created_at"
+      ],
+      "foreign_keys": [
+        "fk_fav_customer",
+        "fk_fav_target"
+      ],
+      "indexes": [
+        "idx_favorites_customer_created"
+      ],
+      "unique_constraints": [
+        "uq_favorite"
+      ]
+    },
+    "featured_listings": {
+      "checks": [],
+      "columns": [
+        "id",
+        "user_id",
+        "subscription_id",
+        "status",
+        "starts_at",
+        "ends_at",
+        "created_at",
+        "updated_at"
+      ],
+      "foreign_keys": [
+        "fk_featured_sub",
+        "fk_featured_user"
+      ],
+      "indexes": [
+        "idx_featured"
+      ],
+      "unique_constraints": []
+    },
+    "lead_wallets": {
+      "checks": [],
+      "columns": [
+        "user_id",
+        "credits",
+        "updated_at"
+      ],
+      "foreign_keys": [
+        "fk_lead_wallet_user"
+      ],
+      "indexes": [],
+      "unique_constraints": []
+    },
+    "locations": {
+      "checks": [],
+      "columns": [
+        "id",
+        "user_id",
+        "label",
+        "address_line",
+        "area",
+        "city",
+        "state",
+        "pincode",
+        "latitude",
+        "longitude",
+        "is_default",
+        "created_at",
+        "updated_at"
+      ],
+      "foreign_keys": [
+        "fk_locations_user"
+      ],
+      "indexes": [
+        "idx_locations_city"
+      ],
+      "unique_constraints": []
+    },
+    "manual_payment_submissions": {
+      "checks": [],
+      "columns": [
+        "id",
+        "payment_id",
+        "user_id",
+        "payer_reference",
+        "payer_note",
+        "status",
+        "reviewed_by",
+        "review_note",
+        "submitted_at",
+        "reviewed_at"
+      ],
+      "foreign_keys": [
+        "fk_manual_payment",
+        "fk_manual_reviewer",
+        "fk_manual_user"
+      ],
+      "indexes": [
+        "idx_manual_status"
+      ],
+      "unique_constraints": [
+        "uq_manual_payment"
+      ]
+    },
+    "notifications": {
+      "checks": [],
+      "columns": [
+        "id",
+        "user_id",
+        "type",
+        "title",
+        "message",
+        "link",
+        "is_read",
+        "created_at"
+      ],
+      "foreign_keys": [
+        "fk_notification_user"
+      ],
+      "indexes": [
+        "idx_notifications_user"
+      ],
+      "unique_constraints": []
+    },
+    "payment_method_audit": {
+      "checks": [],
+      "columns": [
+        "id",
+        "payment_method_id",
+        "admin_user_id",
+        "action",
+        "before_json",
+        "after_json",
+        "created_at"
+      ],
+      "foreign_keys": [
+        "fk_pma_admin",
+        "fk_pma_method"
+      ],
+      "indexes": [
+        "idx_pma_admin",
+        "idx_pma_method"
+      ],
+      "unique_constraints": []
+    },
+    "payment_methods": {
+      "checks": [],
+      "columns": [
+        "id",
+        "code",
+        "name",
+        "method_type",
+        "gateway_code",
+        "audience",
+        "currency",
+        "merchant_upi_id",
+        "bank_beneficiary",
+        "bank_reference",
+        "display_instructions",
+        "display_order",
+        "is_active",
+        "created_by",
+        "updated_by",
+        "created_at",
+        "updated_at"
+      ],
+      "foreign_keys": [
+        "fk_payment_method_created_by",
+        "fk_payment_method_updated_by"
+      ],
+      "indexes": [
+        "idx_payment_method_active",
+        "idx_payment_method_type"
+      ],
+      "unique_constraints": []
+    },
+    "payment_reconciliation_jobs": {
+      "checks": [],
+      "columns": [
+        "id",
+        "webhook_event_id",
+        "payment_id",
+        "status",
+        "attempts",
+        "max_attempts",
+        "next_attempt_at",
+        "locked_at",
+        "last_error",
+        "created_at",
+        "updated_at"
+      ],
+      "foreign_keys": [
+        "fk_reconcile_payment",
+        "fk_reconcile_webhook"
+      ],
+      "indexes": [
+        "idx_reconcile_due",
+        "idx_reconcile_payment",
+        "idx_reconcile_payment_due"
+      ],
+      "unique_constraints": [
+        "uq_reconcile_webhook_event"
+      ]
+    },
+    "payment_status_history": {
+      "checks": [],
+      "columns": [
+        "id",
+        "payment_id",
+        "old_status",
+        "new_status",
+        "source",
+        "external_event_key",
+        "note",
+        "actor_user_id",
+        "created_at"
+      ],
+      "foreign_keys": [
+        "fk_psh_actor",
+        "fk_psh_payment"
+      ],
+      "indexes": [
+        "idx_psh_external",
+        "idx_psh_payment"
+      ],
+      "unique_constraints": []
+    },
+    "payment_webhook_events": {
+      "checks": [],
+      "columns": [
+        "id",
+        "provider",
+        "event_key",
+        "event_type",
+        "payload_sha256",
+        "provider_payment_id",
+        "provider_order_id",
+        "signature_valid",
+        "processing_status",
+        "processing_note",
+        "received_at",
+        "processed_at"
+      ],
+      "foreign_keys": [],
+      "indexes": [
+        "idx_webhook_order",
+        "idx_webhook_payment",
+        "idx_webhook_status"
+      ],
+      "unique_constraints": [
+        "uq_webhook_event"
+      ]
+    },
+    "payments": {
+      "checks": [],
+      "columns": [
+        "id",
+        "user_id",
+        "subscription_id",
+        "provider",
+        "provider_payment_id",
+        "amount",
+        "currency",
+        "status",
+        "created_at",
+        "updated_at",
+        "payment_method_id",
+        "payment_method_code_snapshot",
+        "payment_method_name_snapshot",
+        "payment_method_type_snapshot",
+        "manual_instructions_snapshot",
+        "merchant_upi_id_snapshot",
+        "bank_beneficiary_snapshot",
+        "bank_reference_snapshot",
+        "plan_id",
+        "plan_code_snapshot",
+        "plan_name_snapshot",
+        "subtotal_amount",
+        "tax_amount",
+        "billing_period_months",
+        "idempotency_key",
+        "provider_order_id",
+        "gateway_callback_verified_at",
+        "reconciliation_status",
+        "reconciliation_note",
+        "paid_at",
+        "failed_at",
+        "cancelled_at",
+        "refunded_at",
+        "disputed_at",
+        "invoice_reference",
+        "checkout_expires_at"
+      ],
+      "foreign_keys": [
+        "fk_payment_method",
+        "fk_payment_plan",
+        "fk_payment_sub",
+        "fk_payment_user"
+      ],
+      "indexes": [
+        "idx_payment_method",
+        "idx_payment_reconcile",
+        "idx_payment_status"
+      ],
+      "unique_constraints": [
+        "uq_payment_idempotency",
+        "uq_payment_provider_order",
+        "uq_payment_provider_payment"
+      ]
+    },
+    "platform_activity": {
+      "checks": [],
+      "columns": [
+        "id",
+        "actor_id",
+        "action",
+        "target_type",
+        "target_id",
+        "details",
+        "created_at"
+      ],
+      "foreign_keys": [
+        "fk_activity_actor"
+      ],
+      "indexes": [
+        "idx_activity_action",
+        "idx_activity_actor_created",
+        "idx_activity_created"
+      ],
+      "unique_constraints": []
+    },
+    "portfolio_images": {
+      "checks": [],
+      "columns": [
+        "id",
+        "user_id",
+        "image_path",
+        "caption",
+        "created_at",
+        "updated_at"
+      ],
+      "foreign_keys": [
+        "fk_portfolio_user"
+      ],
+      "indexes": [
+        "idx_portfolio_user",
+        "idx_portfolio_user_created_id"
+      ],
+      "unique_constraints": []
+    },
+    "provider_profiles": {
+      "checks": [],
+      "columns": [
+        "id",
+        "user_id",
+        "headline",
+        "about",
+        "experience_years",
+        "service_area",
+        "price_min",
+        "price_max",
+        "availability_status",
+        "working_hours",
+        "verification_status",
+        "verified_at",
+        "is_featured",
+        "profile_views",
+        "created_at",
+        "updated_at"
+      ],
+      "foreign_keys": [
+        "fk_provider_user"
+      ],
+      "indexes": [
+        "idx_provider_available",
+        "idx_provider_verify"
+      ],
+      "unique_constraints": []
+    },
+    "provider_services": {
+      "checks": [],
+      "columns": [
+        "id",
+        "provider_user_id",
+        "service_id",
+        "title",
+        "description",
+        "price_from",
+        "price_to",
+        "is_active",
+        "created_at",
+        "updated_at"
+      ],
+      "foreign_keys": [
+        "fk_ps_service",
+        "fk_ps_user"
+      ],
+      "indexes": [
+        "idx_ps_active"
+      ],
+      "unique_constraints": [
+        "uq_provider_service"
+      ]
+    },
+    "reports": {
+      "checks": [],
+      "columns": [
+        "id",
+        "reporter_id",
+        "target_type",
+        "target_id",
+        "reason",
+        "details",
+        "status",
+        "resolved_by",
+        "resolution_note",
+        "created_at",
+        "updated_at"
+      ],
+      "foreign_keys": [
+        "fk_report_admin",
+        "fk_reporter"
+      ],
+      "indexes": [
+        "idx_reports_created",
+        "idx_reports_status"
+      ],
+      "unique_constraints": []
+    },
+    "request_status_history": {
+      "checks": [],
+      "columns": [
+        "id",
+        "request_id",
+        "status",
+        "changed_by",
+        "note",
+        "created_at"
+      ],
+      "foreign_keys": [
+        "fk_rsh_request",
+        "fk_rsh_user"
+      ],
+      "indexes": [
+        "idx_rsh_request"
+      ],
+      "unique_constraints": []
+    },
+    "reviews": {
+      "checks": [
+        "chk_rating"
+      ],
+      "columns": [
+        "id",
+        "request_id",
+        "customer_id",
+        "target_user_id",
+        "rating",
+        "comment",
+        "status",
+        "created_at",
+        "updated_at"
+      ],
+      "foreign_keys": [
+        "fk_review_customer",
+        "fk_review_request",
+        "fk_review_target"
+      ],
+      "indexes": [
+        "idx_reviews_customer_created",
+        "idx_reviews_target",
+        "idx_reviews_target_created"
+      ],
+      "unique_constraints": []
+    },
+    "schema_migrations": {
+      "checks": [],
+      "columns": [
+        "version",
+        "applied_at",
+        "checksum_sha256"
+      ],
+      "foreign_keys": [],
+      "indexes": [],
+      "unique_constraints": []
+    },
+    "service_requests": {
+      "checks": [],
+      "columns": [
+        "id",
+        "customer_id",
+        "provider_id",
+        "business_id",
+        "category_id",
+        "service_id",
+        "request_type",
+        "title",
+        "description",
+        "location_text",
+        "preferred_date",
+        "preferred_time",
+        "budget_min",
+        "budget_max",
+        "additional_notes",
+        "status",
+        "created_at",
+        "updated_at"
+      ],
+      "foreign_keys": [
+        "fk_sr_business",
+        "fk_sr_category",
+        "fk_sr_customer",
+        "fk_sr_provider",
+        "fk_sr_service"
+      ],
+      "indexes": [
+        "idx_sr_business",
+        "idx_sr_business_created",
+        "idx_sr_category",
+        "idx_sr_customer",
+        "idx_sr_customer_created",
+        "idx_sr_provider",
+        "idx_sr_provider_created",
+        "idx_sr_requirement_feed",
+        "idx_sr_status",
+        "idx_sr_type_status_service"
+      ],
+      "unique_constraints": []
+    },
+    "services": {
+      "checks": [],
+      "columns": [
+        "id",
+        "category_id",
+        "name",
+        "slug",
+        "description",
+        "is_active",
+        "created_at",
+        "updated_at"
+      ],
+      "foreign_keys": [
+        "fk_services_category"
+      ],
+      "indexes": [
+        "idx_service_name"
+      ],
+      "unique_constraints": [
+        "uq_service_category_slug"
+      ]
+    },
+    "subscription_plans": {
+      "checks": [],
+      "columns": [
+        "id",
+        "code",
+        "name",
+        "audience",
+        "price_monthly",
+        "featured_days",
+        "lead_limit",
+        "description",
+        "is_active",
+        "created_at",
+        "updated_at",
+        "billing_period_months",
+        "tax_rate_bps",
+        "tax_label"
+      ],
+      "foreign_keys": [],
+      "indexes": [],
+      "unique_constraints": []
+    },
+    "subscriptions": {
+      "checks": [],
+      "columns": [
+        "id",
+        "user_id",
+        "plan",
+        "status",
+        "starts_at",
+        "ends_at",
+        "price",
+        "created_at",
+        "updated_at",
+        "plan_id",
+        "source_payment_id",
+        "billing_period_months",
+        "invoice_reference",
+        "suspension_reason",
+        "benefits_applied_at"
+      ],
+      "foreign_keys": [
+        "fk_subscription_plan",
+        "fk_subscription_source_payment",
+        "fk_subscription_user"
+      ],
+      "indexes": [
+        "idx_subscription_schedule",
+        "idx_subscription_user"
+      ],
+      "unique_constraints": [
+        "uq_subscription_source_payment"
+      ]
+    },
+    "users": {
+      "checks": [],
+      "columns": [
+        "id",
+        "name",
+        "email",
+        "phone",
+        "password_hash",
+        "role",
+        "status",
+        "profile_image",
+        "city",
+        "state",
+        "area",
+        "pincode",
+        "latitude",
+        "longitude",
+        "last_login_at",
+        "email_verified_at",
+        "session_version",
+        "created_at",
+        "updated_at"
+      ],
+      "foreign_keys": [],
+      "indexes": [
+        "idx_users_location",
+        "idx_users_name",
+        "idx_users_role_status",
+        "idx_users_role_status_id"
+      ],
+      "unique_constraints": []
+    }
+  }
+}

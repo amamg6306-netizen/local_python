@@ -1,0 +1,59 @@
+route,auth,state_change,csrf_on_post,upload,fetchAll_calls,contains_limit,prepared_calls,raw_query_calls
+403.php,public,,n/a,no,0,no,0,0
+404.php,public,,n/a,no,0,no,0,0
+about.php,public,,n/a,no,0,no,0,0
+admin/_nav.php,public,,n/a,no,0,no,0,0
+admin/advertisements.php,role:'admin',POST,yes,no,1,no,1,1
+admin/businesses.php,role:'admin',POST,yes,no,1,no,1,1
+admin/categories.php,role:'admin',POST,yes,no,1,no,3,1
+admin/index.php,role:'admin',,n/a,no,1,yes,0,1
+admin/payments.php,role:'admin',,n/a,no,1,yes,0,1
+admin/providers.php,role:'admin',POST,yes,no,1,no,1,1
+admin/reports.php,role:'admin',POST,yes,no,1,no,1,1
+admin/requests.php,role:'admin',,n/a,no,1,yes,0,1
+admin/reviews.php,role:'admin',POST,yes,no,1,no,1,1
+admin/services.php,role:'admin',POST,yes,no,1,no,1,1
+admin/subscriptions.php,role:'admin',,n/a,no,1,yes,0,1
+admin/users.php,role:'admin',POST,yes,no,1,no,2,0
+ajax/favorite.php,customer (manual),,n/a,no,0,no,3,0
+auth/login.php,guest-only,POST,yes,no,0,yes,1,0
+auth/logout.php,public,GET logout,n/a,no,0,no,0,0
+auth/register.php,guest-only,POST,yes,no,0,yes,4,0
+business/dashboard.php,role:'business',,n/a,no,0,no,1,0
+business/profile.php,role:'business',POST,yes,yes,1,no,3,1
+business/requests.php,role: provider|business (included handler),,n/a,no,0,no,0,0
+business/services.php,role:'business',POST,yes,no,2,no,3,1
+business/subscription.php,role:'business',,n/a,no,1,no,0,1
+business.php,public,,n/a,no,2,yes,3,0
+categories.php,public,,n/a,no,1,no,0,1
+config/database.php,public,,n/a,no,0,no,0,0
+contact.php,public,POST,yes,no,0,no,0,0
+customer/dashboard.php,role:'customer',,n/a,no,0,no,0,0
+customer/requests.php,role:'customer',,n/a,no,1,no,1,0
+favorites.php,role:'customer',,n/a,no,1,no,1,0
+includes/auth.php,role:string|array $roles,,n/a,no,0,yes,1,0
+includes/footer.php,public,,n/a,no,0,no,0,0
+includes/functions.php,public,,n/a,no,0,yes,7,0
+includes/header.php,public,,n/a,no,0,no,0,0
+includes/navbar.php,public,,n/a,no,0,no,0,0
+index.php,public,,n/a,no,3,yes,0,3
+login.php,public,,n/a,no,0,no,0,0
+logout.php,public,GET logout,n/a,no,0,no,0,0
+notifications.php,login,POST,yes,no,1,yes,3,0
+post-requirement.php,role:'customer',POST,yes,no,2,no,2,2
+privacy.php,public,,n/a,no,0,no,0,0
+provider/available-requirements.php,"role:['provider','business']",,n/a,no,1,no,1,0
+provider/dashboard.php,role:'provider',,n/a,no,0,no,1,0
+provider/portfolio.php,role:'provider',POST,yes,yes,1,no,2,0
+provider/profile.php,role:'provider',POST,yes,yes,0,no,3,0
+provider/requests.php,"role:['provider','business']",,n/a,no,1,no,1,0
+provider/services.php,role:'provider',POST,yes,no,2,no,3,1
+provider/subscription.php,role:'provider',,n/a,no,1,no,0,1
+provider.php,public,,n/a,no,3,yes,4,0
+register.php,public,,n/a,no,0,no,0,0
+report.php,login,POST,yes,no,0,no,1,0
+request-details.php,login,POST,yes,no,1,no,10,0
+request-service.php,role:'customer',POST,yes,no,2,no,5,1
+reviews.php,login,POST,yes,no,3,no,6,0
+search.php,public,,n/a,no,2,yes,1,1
+terms.php,public,,n/a,no,0,no,0,0

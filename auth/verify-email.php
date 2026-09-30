@@ -1,0 +1,4 @@
+<?php
+require_once __DIR__.'/../includes/auth.php';$selector=(string)($_GET['selector']??'');$token=(string)($_GET['token']??'');$record=find_valid_auth_token('email_verify',$selector,$token);
+if(!$record){flash('error','This verification link is invalid or expired.');redirect('auth/login.php');}
+$pdo=db();$pdo->beginTransaction();try{$pdo->prepare("UPDATE users SET email_verified_at=COALESCE(email_verified_at,NOW()),status=CASE WHEN status='pending' THEN 'active' ELSE status END WHERE id=?")->execute([(int)$record['user_id']]);$pdo->prepare('UPDATE auth_tokens SET used_at=NOW() WHERE id=?')->execute([(int)$record['id']]);$pdo->commit();log_activity((int)$record['user_id'],'email_verified','user',(int)$record['user_id']);flash('success','Email verified. You can now login.');}catch(Throwable $e){if($pdo->inTransaction())$pdo->rollBack();flash('error','Email verification could not be completed.');}redirect('auth/login.php');

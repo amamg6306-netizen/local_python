@@ -1,0 +1,158 @@
+services:
+  - type: web
+    name: localconnect
+    runtime: python
+    plan: 0.5c-512mb
+    buildCommand: pip install -r requirements.txt
+    preDeployCommand: python scripts/check_config.py && python scripts/check_db_schema.py
+    startCommand: gunicorn app:app --bind 0.0.0.0:$PORT
+    healthCheckPath: /health
+    disk:
+      name: localconnect-uploads
+      mountPath: /var/data/localconnect/uploads
+      sizeGB: 1
+    envVars:
+      - key: PYTHON_VERSION
+        value: 3.13.15
+      - key: APP_ENV
+        value: production
+      - key: APP_DEBUG
+        value: "false"
+      - key: APP_BASE_PATH
+        value: /
+      - key: FORCE_HTTPS
+        value: "true"
+      - key: SECURITY_CSP_MODE
+        value: enforce
+      - key: SESSION_COOKIE_SECURE
+        value: "true"
+      - key: TRUST_PROXY
+        value: "true"
+      - key: TRUSTED_PROXY_IPS
+        value: "*"
+      - key: TRUSTED_PROXY_HOPS
+        value: "1"
+      - key: APP_REQUIRE_EMAIL_VERIFICATION
+        value: "true"
+      - key: APP_ADMIN_MFA_REQUIRED
+        value: "true"
+      - key: UPLOAD_STORAGE_BACKEND
+        value: filesystem
+      - key: UPLOAD_STORAGE_ROOT
+        value: /var/data/localconnect/uploads
+      - key: UPLOAD_DISK_REQUIRED
+        value: "true"
+      - key: UPLOAD_REQUIRE_REENCODE
+        value: "true"
+      - key: UPLOAD_MAX_FILE_BYTES
+        value: "3145728"
+      - key: UPLOAD_PUBLIC_CACHE_SECONDS
+        value: "86400"
+      - key: MAX_REQUEST_BYTES
+        value: "8388608"
+      - key: MAX_FORM_MEMORY_BYTES
+        value: "524288"
+      - key: MAX_FORM_PARTS
+        value: "200"
+      - key: STATIC_CACHE_SECONDS
+        value: "3600"
+      - key: SLOW_REQUEST_MS
+        value: "1500"
+      - key: PAYMENT_ALLOW_LIVE
+        value: "false"
+      - key: PAYMENT_RAZORPAY_KEY_ID
+        sync: false
+      - key: PAYMENT_RAZORPAY_KEY_SECRET
+        sync: false
+      - key: PAYMENT_RAZORPAY_WEBHOOK_SECRET
+        sync: false
+      - key: PAYMENT_RAZORPAY_WEBHOOK_IP_ALLOWLIST
+        sync: false
+      - key: SECRET_KEY
+        sync: false
+      # Preserve the existing production APP_KEY while legacy admin MFA seeds exist.
+      - key: APP_KEY
+        sync: false
+      - key: APP_URL
+        sync: false
+      - key: DATABASE_URL
+        sync: false
+      - key: APP_MAIL_DRIVER
+        value: smtp
+      - key: APP_MAIL_FROM
+        sync: false
+      - key: SMTP_HOST
+        sync: false
+      - key: SMTP_PORT
+        value: "587"
+      - key: SMTP_USERNAME
+        sync: false
+      - key: SMTP_PASSWORD
+        sync: false
+      - key: SMTP_USE_TLS
+        value: "true"
+  - type: cron
+    name: localconnect-payment-reconciliation
+    runtime: python
+    plan: 0.5c-512mb
+    schedule: '*/5 * * * *'
+    buildCommand: pip install -r requirements.txt
+    startCommand: python scripts/payment_reconciliation_worker.py --limit=20
+    envVars:
+      - key: PYTHON_VERSION
+        value: 3.13.15
+      - key: APP_ENV
+        value: production
+      - key: APP_URL
+        fromService:
+          name: localconnect
+          type: web
+          envVarKey: APP_URL
+      - key: SECRET_KEY
+        fromService:
+          name: localconnect
+          type: web
+          envVarKey: SECRET_KEY
+      - key: DATABASE_URL
+        fromService:
+          name: localconnect
+          type: web
+          envVarKey: DATABASE_URL
+      - key: APP_MAIL_DRIVER
+        value: disabled
+      - key: APP_REQUIRE_EMAIL_VERIFICATION
+        value: "true"
+      - key: APP_ADMIN_MFA_REQUIRED
+        value: "true"
+      - key: FORCE_HTTPS
+        value: "true"
+      - key: SESSION_COOKIE_SECURE
+        value: "true"
+      - key: UPLOAD_STORAGE_BACKEND
+        value: filesystem
+      - key: UPLOAD_STORAGE_ROOT
+        value: /tmp/localconnect/uploads
+      - key: UPLOAD_DISK_REQUIRED
+        value: "false"
+      - key: UPLOAD_REQUIRE_REENCODE
+        value: "true"
+      - key: PAYMENT_ALLOW_LIVE
+        fromService:
+          name: localconnect
+          type: web
+          envVarKey: PAYMENT_ALLOW_LIVE
+      - key: PAYMENT_RAZORPAY_KEY_ID
+        fromService:
+          name: localconnect
+          type: web
+          envVarKey: PAYMENT_RAZORPAY_KEY_ID
+      - key: PAYMENT_RAZORPAY_KEY_SECRET
+        fromService:
+          name: localconnect
+          type: web
+          envVarKey: PAYMENT_RAZORPAY_KEY_SECRET
+      - key: PAYMENT_RAZORPAY_WEBHOOK_SECRET
+        fromService:
+          name: localconnect
+          type: web
+          envVarKey: PAYMENT_RAZORPAY_WEBHOOK_SECRET

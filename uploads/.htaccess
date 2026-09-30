@@ -1,0 +1,16 @@
+Options -Indexes -ExecCGI
+
+# Uploads are data, never executable application code.
+<FilesMatch "\.(php|php[0-9]?|phtml|phar|cgi|pl|py|sh|shtml|htaccess|htpasswd)$">
+  Require all denied
+</FilesMatch>
+<IfModule mod_mime.c>
+  RemoveHandler .php .php3 .php4 .php5 .php7 .php8 .phtml .phar .cgi .pl .py .sh .shtml
+  RemoveType .php .php3 .php4 .php5 .php7 .php8 .phtml .phar
+</IfModule>
+<IfModule mod_headers.c>
+  Header always unset X-Powered-By
+  Header always set X-Content-Type-Options "nosniff"
+  Header always set Content-Security-Policy "default-src 'none'; img-src 'self'; style-src 'none'; sandbox"
+  Header always set Referrer-Policy "no-referrer"
+</IfModule>

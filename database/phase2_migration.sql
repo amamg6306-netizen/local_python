@@ -1,0 +1,9 @@
+USE localconnect_db;
+
+CREATE TABLE IF NOT EXISTS portfolio_images (
+ id BIGINT UNSIGNED AUTO_INCREMENT PRIMARY KEY,user_id BIGINT UNSIGNED NOT NULL,image_path VARCHAR(255) NOT NULL,caption VARCHAR(255) NULL,created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+ CONSTRAINT fk_portfolio_user FOREIGN KEY(user_id) REFERENCES users(id) ON DELETE CASCADE,INDEX idx_portfolio_user(user_id,created_at)
+) ENGINE=InnoDB;
+
+INSERT IGNORE INTO services(category_id,name,slug,description) VALUES
+(2,'Electrician','electrician','General electrical installation and repair'),(2,'Switchboard Repair','switchboard-repair','Switchboard inspection and repair'),(3,'Plumber','plumber','General plumbing work'),(3,'Leak Repair','leak-repair','Pipe and tap leak repair'),(4,'Carpentry Work','carpentry-work','General carpentry and furniture repair'),(6,'Home Cleaning','home-cleaning','Residential cleaning service'),(7,'Washing Machine Repair','washing-machine-repair','Washing machine diagnostics and repair'),(8,'AC Repair','ac-repair','Air conditioner diagnostics and repair'),(8,'AC Installation','ac-installation','Air conditioner installation'),(9,'Computer Repair','computer-repair','Desktop and laptop repair'),(9,'Mobile Repair','mobile-repair','Mobile phone diagnostics and repair'),(10,'Car Mechanic','car-mechanic','General car repair and maintenance'),(11,'Salon Services','salon-services','Beauty and salon services'),(12,'Home Tutor','home-tutor','Private tutoring services'),(13,'Event Photography','event-photography','Photography for local events'),(15,'Masonry Work','masonry-work','Construction and masonry work'),(16,'Tailoring & Alteration','tailoring-alteration','Clothing tailoring and alterations'),(17,'Personal Fitness Training','personal-fitness-training','Personal fitness coaching');

@@ -1,0 +1,10 @@
+LocalConnect Production Phase 5 release manifest
+Generated: 2026-09-24T14:18:52Z
+Base: LocalConnect_Production_Phase4.zip
+Release status: NOT READY FOR LIVE PAYMENTS
+Primary migration: database/production/20260924_004_performance_reliability.sql
+Primary test command: tests/phase5/run_phase5.sh
+Performance runbook: docs/PERFORMANCE_MEMORY_RUNBOOK.md
+Test report: docs/PRODUCTION_PHASE5_TEST_REPORT.md
+Changed files: docs/production/PHASE5_CHANGED_FILES.txt
+Checksums: docs/production/PHASE5_RELEASE_CHECKSUMS.txt

@@ -1,0 +1,54 @@
+Files PHASE5/.env.example and PHASE6/.env.example differ
+Files PHASE5/.htaccess and PHASE6/.htaccess differ
+Only in PHASE6: PRODUCTION_PHASE6.md
+Files PHASE5/README.md and PHASE6/README.md differ
+Files PHASE5/admin/categories.php and PHASE6/admin/categories.php differ
+Files PHASE5/admin/payment-method-edit.php and PHASE6/admin/payment-method-edit.php differ
+Files PHASE5/admin/users.php and PHASE6/admin/users.php differ
+Files PHASE5/assets/js/app.js and PHASE6/assets/js/app.js differ
+Files PHASE5/auth/forgot-password.php and PHASE6/auth/forgot-password.php differ
+Files PHASE5/auth/login.php and PHASE6/auth/login.php differ
+Files PHASE5/auth/resend-verification.php and PHASE6/auth/resend-verification.php differ
+Files PHASE5/billing/gateway.php and PHASE6/billing/gateway.php differ
+Files PHASE5/business/services.php and PHASE6/business/services.php differ
+Files PHASE5/config/app.php and PHASE6/config/app.php differ
+Files PHASE5/config/database.php and PHASE6/config/database.php differ
+Only in PHASE6/database/production: 20260924_005_production_hardening.sql
+Only in PHASE6/database/production: 20260924_005_production_hardening_preflight.sql
+Only in PHASE6/database/production: 20260924_005_production_hardening_rollback.sql
+Files PHASE5/database/production/fresh_schema.sql and PHASE6/database/production/fresh_schema.sql differ
+Only in PHASE6/database/production: least_privilege_grants.template.sql
+Only in PHASE6: deploy
+Only in PHASE6/docs: ADMIN_PAYMENT_OPERATIONS.md
+Only in PHASE6/docs: FINAL_RELEASE_STATUS.md
+Only in PHASE6/docs: OWASP_ASVS_5_MAPPING.md
+Only in PHASE6/docs: PRODUCTION_DEPLOYMENT_RUNBOOK.md
+Only in PHASE6/docs: PRODUCTION_PHASE6_IMPLEMENTATION.md
+Only in PHASE6/docs: PRODUCTION_PHASE6_RELEASE_GATE.md
+Only in PHASE6/docs: PRODUCTION_PHASE6_TEST_REPORT.md
+Only in PHASE6/docs: ROLLBACK_RUNBOOK.md
+Only in PHASE6/docs: SECURITY_ARCHITECTURE_DECISIONS.md
+Only in PHASE6/docs/production: PHASE6_CHANGED_FILES.txt
+Files PHASE5/docs/production/README.md and PHASE6/docs/production/README.md differ
+Only in PHASE6/docs/production: phase6_test_output.txt
+Only in PHASE6/docs: release-evidence
+Files PHASE5/includes/auth.php and PHASE6/includes/auth.php differ
+Files PHASE5/includes/footer.php and PHASE6/includes/footer.php differ
+Files PHASE5/includes/functions.php and PHASE6/includes/functions.php differ
+Files PHASE5/includes/header.php and PHASE6/includes/header.php differ
+Only in PHASE6/includes: security.php
+Files PHASE5/post-requirement.php and PHASE6/post-requirement.php differ
+Files PHASE5/provider/services.php and PHASE6/provider/services.php differ
+Files PHASE5/request-service.php and PHASE6/request-service.php differ
+Only in PHASE6/storage: release_evidence
+Files PHASE5/tests/phase1/static_security_baseline.py and PHASE6/tests/phase1/static_security_baseline.py differ
+Only in PHASE6/tests: phase6
+Only in PHASE6/tools: __pycache__
+Only in PHASE6/tools: backup_database.sh
+Files PHASE5/tools/check_production_config.php and PHASE6/tools/check_production_config.php differ
+Only in PHASE6/tools: dependency_inventory.py
+Only in PHASE6/tools: release_gate.php
+Only in PHASE6/tools: restore_database.sh
+Only in PHASE6/tools: secret_scan.py
+Files PHASE5/uploads/.htaccess and PHASE6/uploads/.htaccess differ
+Files PHASE5/webhooks/razorpay.php and PHASE6/webhooks/razorpay.php differ

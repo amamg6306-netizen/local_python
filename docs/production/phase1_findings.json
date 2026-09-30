@@ -1,0 +1,31 @@
+{
+  "phase": "A",
+  "date": "2026-09-24",
+  "release_status": "NOT READY FOR LIVE PAYMENTS",
+  "input_zip_sha256": "74026f8755030010685506b92e7ab622ac14309697162d5f85a59acaf8610dc4",
+  "baseline": {
+    "original_php_files": 58,
+    "original_sql_files": 7,
+    "original_total_files": 81,
+    "detected_post_handlers": 22,
+    "detected_post_handlers_with_csrf": 22,
+    "php_lint": "pass",
+    "helper_smoke": "pass",
+    "http_public_smoke": "pass",
+    "db_runtime": "skipped: pdo_mysql/MySQL unavailable in audit container"
+  },
+  "confirmed_findings": [
+    {"id":"P1-SEC-001","severity":"high","title":"Production DB configuration is hard-coded and not secrets-based"},
+    {"id":"P1-SEC-002","severity":"high","title":"Demo accounts and known credentials exist in deployable SQL/README"},
+    {"id":"P1-SEC-003","severity":"high","title":"Login throttling, password reset, email verification and admin MFA are absent"},
+    {"id":"P1-PAY-001","severity":"high","title":"No live checkout, payment methods, signed webhooks or reconciliation implementation"},
+    {"id":"P1-PAY-002","severity":"high","title":"Subscription concurrency/state invariants are insufficient for payment enablement"},
+    {"id":"P1-UPLOAD-001","severity":"high","title":"Upload controls lack image decode/dimension/resource validation and server-independent execution isolation"},
+    {"id":"P1-FUNC-001","severity":"medium","title":"Business subscription page uses provider/both audience filter"},
+    {"id":"P1-SESSION-001","severity":"medium","title":"Session timeouts/proxy-aware secure-cookie handling missing; logout is GET state change"},
+    {"id":"P1-HTTP-001","severity":"medium","title":"HSTS and CSP are not configured"},
+    {"id":"P1-PERF-001","severity":"medium","title":"Unbounded fetchAll listings include the three identified request pages"},
+    {"id":"P1-DB-001","severity":"medium","title":"Fresh SQL drops tables and historical migrations are not uniformly idempotent/reversible"},
+    {"id":"P1-AUDIT-001","severity":"medium","title":"Audit logging is partial and log_activity suppresses failures"}
+  ]
+}

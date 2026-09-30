@@ -1,0 +1,20 @@
+<?php
+declare(strict_types=1);
+putenv('APP_ENV=development');
+require __DIR__.'/../../config/app.php';
+require __DIR__.'/../../includes/functions.php';
+require __DIR__.'/../../includes/security.php';
+$fail=0;
+$check=function(bool $ok,string $name)use(&$fail){echo($ok?'PASS':'FAIL').": {$name}\n";if(!$ok)$fail++;};
+$n1=csp_nonce();$n2=csp_nonce();
+$check($n1!=='' && hash_equals($n1,$n2),'CSP nonce is non-empty and stable within a request');
+$csp=localconnect_csp();
+$check(str_contains($csp,"script-src 'self' 'nonce-{$n1}'"),'CSP binds scripts to the request nonce');
+$check(str_contains($csp,"script-src-attr 'none'"),'CSP blocks inline event-handler attributes');
+$check(str_contains($csp,"frame-ancestors 'none'"),'CSP prevents framing');
+$check(str_starts_with(hsts_header_value(),'max-age='),'HSTS builder returns a max-age directive');
+$red=redact_log_scalar('authorization=Bearer abc.def token=secret rzp_live_123456789012345');
+$check(!str_contains((string)$red,'abc.def')&&!str_contains((string)$red,'secret')&&!str_contains((string)$red,'rzp_live_123456789012345'),'log redaction removes common credential shapes');
+$check(safe_local_path('admin/payments.php')==='admin/payments.php','safe local path allows local route');
+$check(safe_local_path('https://evil.example','index.php')==='index.php','safe local path rejects external URL');
+exit($fail?1:0);

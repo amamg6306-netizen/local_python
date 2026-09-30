@@ -1,0 +1,57 @@
+#!/usr/bin/env python3
+from pathlib import Path
+import re,sys
+ROOT=Path(__file__).resolve().parents[2]
+fail=[];passes=[]
+def ck(cond,msg):(passes if cond else fail).append(msg)
+
+billing=(ROOT/'includes/billing.php').read_text()
+start=(ROOT/'billing/start.php').read_text()
+method=(ROOT/'billing/payment-method.php').read_text()
+select=(ROOT/'billing/select-method.php').read_text()
+gateway=(ROOT/'billing/gateway.php').read_text()
+ret=(ROOT/'billing/gateway-return.php').read_text()
+manual=(ROOT/'billing/manual.php').read_text()
+webhook=(ROOT/'webhooks/razorpay.php').read_text()
+admin=(ROOT/'admin/payment-detail.php').read_text()
+mig=(ROOT/'database/production/20260924_003_checkout_webhooks.sql').read_text()
+env=(ROOT/'.env.example').read_text()
+prov=(ROOT/'provider/subscription.php').read_text(); biz=(ROOT/'business/subscription.php').read_text()
+
+for name,s in [('start',start),('method page',method),('select method',select),('gateway',gateway),('return',ret),('manual',manual)]:
+    ck("require_role(['provider','business'])" in s,f'{name} denies customer/admin self-checkout')
+ck('billing_plan_for_role' in start and 'plan_id' in start,'plan id is server-validated for role')
+ck("$_POST['amount']" not in billing and 'subtotal_amount' in billing and 'total_amount' in billing,'client amount is not trusted; immutable server snapshots are used')
+ck('token_hash' in mig and 'checkout_token_hash' in billing,'checkout token is hashed in database')
+ck('is_active=1' in billing and "audience IN (?, 'both')" in billing,'selected method is rechecked active and role-appropriate server-side')
+ck('payment_method_code_snapshot' in billing and 'manual_instructions_snapshot' in billing,'payment stores immutable method/instruction snapshots')
+ck("https://api.razorpay.com/v1" in billing and "'/orders'" in billing,'server creates Razorpay order with allowlisted official API endpoint')
+ck('checkout.razorpay.com/v1/checkout.js' in gateway,'browser uses Razorpay hosted checkout')
+checkout_html=(gateway+manual+method+select).lower()
+for forbidden in ['name="cvv','name="cvc','name="card_number','name="card']:
+    ck(forbidden not in checkout_html,f'LocalConnect checkout has no {forbidden[6:]} input')
+ck('record_verified_gateway_callback' in ret and "status='paid'" not in ret and 'activate_entitlement' not in ret,'browser return verifies signature but cannot mark paid/activate')
+ck('CSRF_EXEMPT_WEBHOOK' in webhook and 'HTTP_X_RAZORPAY_SIGNATURE' in webhook,'webhook is explicitly CSRF-exempt and signature-authenticated')
+ck("hash_hmac('sha256',$rawBody" in billing,'webhook HMAC covers exact raw body')
+ck('payment_webhook_events' in mig and 'UNIQUE KEY uq_webhook_event(provider,event_key)' in mig,'webhook replay/idempotency constraint exists')
+ck('provider_order_id' in mig and 'uq_payment_provider_order' in mig and 'uq_payment_provider_payment' in mig,'unique external gateway identifiers enforced')
+ck('remote_razorpay_payment' in billing and 'remote_razorpay_order' in billing and 'verify_remote_payment_matches' in billing,'captured event requires server-side API reconciliation of payment and order')
+ck("mark_payment_paid_after_reconciliation" in billing and "activate_entitlement_for_payment" in billing,'entitlement follows reconciled paid state')
+ck("status='requires_review'" in billing and 'ambiguous' in billing,'ambiguous gateway failures are not blindly retried/charged')
+ck('manual_payment_submissions' in mig and 'verify_manual_payment_admin' in billing,'manual payment has explicit admin review workflow')
+ck('require_admin_mfa_for_sensitive()' in admin and 'require_recent_admin_reauth(' in admin and 'verify_csrf()' in admin,'manual/gateway admin reconciliation requires MFA, reauth and CSRF')
+ck('payer_reference' in manual and 'does not activate' in manual,'manual reference is not treated as proof/auto-entitlement')
+ck("status='disputed'" in billing and "status='suspended'" in billing,'dispute event suspends entitlement for review')
+ck('partially_refunded' in billing and 'Full refund' in billing,'full/partial refund states handled distinctly')
+ck('PAYMENT_ALLOW_LIVE=false' in env,'live payments default disabled')
+ck("audience IN ('provider','both')" in prov and "audience IN ('business','both')" in biz,'subscription pages use correct role audiences')
+ck('LIMIT ? OFFSET ?' in (ROOT/'billing/history.php').read_text(),'user payment history is paginated')
+ck('LIMIT ' in (ROOT/'admin/payments.php').read_text() and 'OFFSET ' in (ROOT/'admin/payments.php').read_text(),'admin payment ledger is paginated')
+for secret in ['PAYMENT_RAZORPAY_KEY_SECRET','PAYMENT_RAZORPAY_WEBHOOK_SECRET']:
+    ck(secret not in gateway and secret not in admin and secret not in manual,f'{secret} not rendered by checkout/admin payment detail')
+ck('DROP TABLE IF EXISTS checkout_intents' not in mig.upper(),'forward migration does not drop Phase 4 data tables')
+print(f'PASS checks: {len(passes)}')
+for x in passes:print('  PASS:',x)
+print(f'FAIL checks: {len(fail)}')
+for x in fail:print('  FAIL:',x)
+sys.exit(1 if fail else 0)

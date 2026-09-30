@@ -1,0 +1,42 @@
+== PHP syntax lint ==
+PASS: PHP syntax lint
+== PHP helper smoke ==
+PASS: helper smoke tests (6 checks)
+== Static security baseline ==
+PASS checks: 9
+  PASS: detected 22 POST handlers
+  PASS: all 22 detected POST handlers have CSRF validation
+  PASS: login uses password_verify
+  PASS: login rotates the session id
+  PASS: registration uses password_hash
+  PASS: PDO emulated prepares are disabled
+  PASS: session cookie has HttpOnly and SameSite settings
+  PASS: uploads use MIME inspection and random server filenames
+  PASS: provider plan audience filter is provider/both
+WARN findings: 19
+  WARN: production DB configuration is hard-coded to root with blank password
+  WARN: database configuration is not environment/secrets based
+  WARN: business subscription incorrectly queries provider/both plans
+  WARN: subscription purchase buttons are disabled; no checkout exists
+  WARN: no payment webhook implementation detected
+  WARN: demo admin credentials/data exist in the deployable SQL seed
+  WARN: fresh SQL is destructive and unsuitable as a production migration
+  WARN: login throttling is not implemented
+  WARN: admin MFA is not implemented
+  WARN: password reset flow is not implemented
+  WARN: email verification flow is not implemented
+  WARN: upload validation does not decode/inspect image dimensions or pixel count
+  WARN: HSTS is not emitted by the application
+  WARN: CSP is not emitted by the application
+  WARN: logout is a GET-triggered state change with no CSRF requirement
+  WARN: provider/available-requirements.php performs an unbounded fetchAll()
+  WARN: provider/requests.php performs an unbounded fetchAll()
+  WARN: customer/requests.php performs an unbounded fetchAll()
+  WARN: ensure_free_subscription() has no locking/unique active-subscription guard; concurrent calls can create duplicates
+FAIL checks: 0
+== HTTP/header smoke == 
+PASS: public-page HTTP/header smoke (about.php)
+== Runtime dependency check ==
+PHP 8.4.23
+PDO drivers: 
+SKIP: pdo_mysql is unavailable in this audit container, so DB-backed/browser tests are not claimed.
