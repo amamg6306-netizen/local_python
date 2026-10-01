@@ -85,19 +85,24 @@ def resolve_secret_key(production: bool) -> bytes:
 def database_uri(production: bool) -> str:
     explicit = env_value("DATABASE_URL")
     if explicit:
-        normalized = explicit
-        if normalized.startswith("mysql://"):
-            normalized = "mysql+pymysql://" + normalized[len("mysql://"):]
-        elif normalized.startswith("mariadb://"):
-            normalized = "mysql+pymysql://" + normalized[len("mariadb://"):]
-        if production and urlsplit(normalized).scheme.lower() != "mysql+pymysql":
-            raise RuntimeError("DATABASE_URL must use MySQL/MariaDB via the mysql+pymysql driver in production.")
+        normalized = explicit.strip()
+        # Render supplies PostgreSQL DATABASE_URL values using postgresql://.
+        # SQLAlchemy with psycopg 3 is used explicitly so local and Render
+        # deployments behave the same way.
+        if normalized.startswith("postgres://"):
+            normalized = "postgresql+psycopg://" + normalized[len("postgres://"):]
+        elif normalized.startswith("postgresql://"):
+            normalized = "postgresql+psycopg://" + normalized[len("postgresql://"):]
+        elif normalized.startswith("postgresql+psycopg://"):
+            pass
+        elif production:
+            raise RuntimeError("DATABASE_URL must use PostgreSQL via the postgresql+psycopg driver in production.")
         return normalized
 
     host = env_value("DB_HOST", None if production else "127.0.0.1")
-    port = env_value("DB_PORT", "3306") or "3306"
+    port = env_value("DB_PORT", "5432") or "5432"
     name = env_value("DB_NAME", None if production else "localconnect_db")
-    user = env_value("DB_USER", None if production else "root")
+    user = env_value("DB_USER", None if production else "postgres")
     password = env_value("DB_PASSWORD")
     if password is None:
         password = env_value("DB_PASS", None if production else "")
@@ -107,11 +112,11 @@ def database_uri(production: bool) -> str:
 
     host = host or "127.0.0.1"
     name = name or "localconnect_db"
-    user = user or "root"
+    user = user or "postgres"
     password = password or ""
     return (
-        f"mysql+pymysql://{quote_plus(user)}:{quote_plus(password)}@"
-        f"{host}:{port}/{quote_plus(name)}?charset=utf8mb4"
+        f"postgresql+psycopg://{quote_plus(user)}:{quote_plus(password)}@"
+        f"{host}:{port}/{quote_plus(name)}"
     )
 
 
@@ -238,11 +243,9 @@ class BaseConfig:
     SQLALCHEMY_TRACK_MODIFICATIONS = False
     _db_connect_args: dict[str, Any] = {
         "connect_timeout": env_int("DB_CONNECT_TIMEOUT", 10, minimum=1, maximum=120),
-        "read_timeout": env_int("DB_READ_TIMEOUT", 30, minimum=1, maximum=300),
-        "write_timeout": env_int("DB_WRITE_TIMEOUT", 30, minimum=1, maximum=300),
     }
     if env_bool("DB_SSL", False):
-        _db_connect_args["ssl"] = {}
+        _db_connect_args["sslmode"] = env_value("DB_SSLMODE", "require") or "require"
     SQLALCHEMY_ENGINE_OPTIONS: dict[str, Any] = {
         "pool_pre_ping": True,
         "pool_recycle": env_int("DB_POOL_RECYCLE", 280, minimum=30, maximum=3600),

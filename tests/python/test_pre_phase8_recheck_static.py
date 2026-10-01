@@ -68,11 +68,11 @@ def test_proxy_client_ip_uses_trusted_end_of_forwarding_chain() -> None:
     require("render.yaml", "TRUSTED_PROXY_HOPS", "value: \"1\"")
 
 
-def test_production_database_url_fails_closed_to_mysql_pymysql() -> None:
+def test_production_database_url_uses_postgresql_psycopg() -> None:
     require(
         "config/settings.py",
-        'urlsplit(normalized).scheme.lower() != "mysql+pymysql"',
-        "DATABASE_URL must use MySQL/MariaDB via the mysql+pymysql driver in production.",
+        'normalized.startswith("postgresql://")',
+        "DATABASE_URL must use PostgreSQL via the postgresql+psycopg driver in production.",
     )
 
 

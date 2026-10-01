@@ -39,7 +39,7 @@ class AuthRateLimit(db.Model):
     attempts = db.Column(INT_UNSIGNED, nullable=False, server_default="0")
     window_started_at = db.Column(db.DateTime, nullable=False)
     blocked_until = db.Column(db.DateTime)
-    updated_at = db.Column(db.DateTime, nullable=False, server_default=now_default(), server_onupdate=now_default())
+    updated_at = db.Column(db.DateTime, nullable=False, server_default=now_default(), onupdate=now_default())
 
 
 class AdminMfa(db.Model):
@@ -53,4 +53,4 @@ class AdminMfa(db.Model):
     last_used_step = db.Column(db.BigInteger)
     last_verified_at = db.Column(db.DateTime)
     created_at = db.Column(db.DateTime, nullable=False, server_default=now_default())
-    updated_at = db.Column(db.DateTime, nullable=False, server_default=now_default(), server_onupdate=now_default())
+    updated_at = db.Column(db.DateTime, nullable=False, server_default=now_default(), onupdate=now_default())

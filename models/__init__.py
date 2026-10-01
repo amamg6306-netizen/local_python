@@ -1,4 +1,4 @@
-"""Effective SQLAlchemy mapping for the current LocalConnect MySQL/MariaDB schema."""
+"""Effective SQLAlchemy mapping for the current LocalConnect PostgreSQL schema."""
 
 from models.billing import (
     Advertisement,

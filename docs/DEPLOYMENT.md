@@ -10,7 +10,7 @@ This repository deploys as a Render **Native Python Web Service**. Docker, Apach
 - Python: `3.13.15`
 - plan: `0.5c-512mb` (paid; required for the attached persistent disk)
 - build: `pip install -r requirements.txt`
-- pre-deploy: `python scripts/check_config.py && python scripts/check_db_schema.py`
+- pre-deploy: `python scripts/check_config.py && python scripts/init_db.py --yes && python scripts/check_db_schema.py`
 - start: `gunicorn app:app --bind 0.0.0.0:$PORT`
 - health check: `/health`
 - disk: `/var/data/localconnect/uploads`, 1 GB
@@ -41,22 +41,27 @@ Before the first production deploy, set the Blueprint's `sync: false` values in 
 
 ## Database preparation
 
-MySQL/MariaDB is external; do not deploy it through this Render service.
+The application now targets PostgreSQL using `psycopg` 3. Render's PostgreSQL `DATABASE_URL` is accepted directly and normalized to
+`postgresql+psycopg://...`. The normal PostgreSQL port is `5432`.
 
-For an empty database, initialize it from the canonical schema using an authorized environment:
+For a fresh database, the Render pre-deploy command automatically runs:
 
 ```bash
-python scripts/init_db.py
 python scripts/init_db.py --yes
+python scripts/check_db_schema.py
 ```
 
-For an existing production database:
+`init_db.py` is non-destructive: it creates missing tables/indexes and seeds the application's categories, services and subscription plans without dropping existing data.
+
+For an existing PostgreSQL database:
 
 1. Take and verify a database backup.
-2. Check migration status with `python scripts/migrate_db.py`.
-3. Review preflight SQL for pending migrations.
-4. Apply with `python scripts/migrate_db.py --preflight --apply` using migration credentials where needed.
-5. Verify with `python scripts/check_db_schema.py`.
+2. Run `python scripts/check_db_schema.py`.
+3. Run `python scripts/init_db.py --yes` to create any missing model objects.
+4. Run `python scripts/check_db_schema.py` again.
+5. Review application logs and perform the live smoke tests below.
+
+The old MySQL/MariaDB SQL files are retained only as historical migration evidence; they are not used by the PostgreSQL deployment path.
 
 The Render pre-deploy command intentionally blocks a release if configuration is invalid or the effective schema is incomplete.
 

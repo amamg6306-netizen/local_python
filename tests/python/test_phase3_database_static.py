@@ -7,7 +7,6 @@ import re
 import unittest
 from pathlib import Path
 
-from database.sql_runner import iter_mysql_statements, strip_database_switches
 
 
 ROOT = Path(__file__).resolve().parents[2]
@@ -89,40 +88,25 @@ class Phase3DatabaseStaticTests(unittest.TestCase):
         fresh = (ROOT / "database" / "production" / "fresh_schema.sql").read_bytes()
         self.assertEqual(hashlib.sha256(schema).hexdigest(), hashlib.sha256(fresh).hexdigest())
 
-    def test_mysql_sql_parser_accepts_all_database_sql(self):
-        files = [ROOT / "database" / "schema.sql", *sorted((ROOT / "database" / "production").glob("*.sql"))]
-        for path in files:
-            with self.subTest(path=path.name):
-                statements = list(iter_mysql_statements(path.read_text(encoding="utf-8")))
-                self.assertGreater(len(statements), 0)
+    def test_postgresql_schema_is_canonical_and_contains_all_tables(self):
+        schema = (ROOT / "database" / "postgresql_schema.sql").read_text(encoding="utf-8")
+        canonical = (ROOT / "database" / "schema.sql").read_text(encoding="utf-8")
+        fresh = (ROOT / "database" / "production" / "fresh_schema.sql").read_text(encoding="utf-8")
+        self.assertEqual(hashlib.sha256(schema.encode()).hexdigest(), hashlib.sha256(canonical.encode()).hexdigest())
+        self.assertEqual(hashlib.sha256(canonical.encode()).hexdigest(), hashlib.sha256(fresh.encode()).hexdigest())
+        for table in self.manifest:
+            self.assertIn(f"CREATE TABLE {table}", schema)
 
-    def test_database_switches_are_removed_by_runner(self):
-        sql = "-- migration header\nUSE localconnect_db; SELECT 'a;b' AS value; SELECT 2;"
-        statements = list(strip_database_switches(iter_mysql_statements(sql)))
-        self.assertEqual(statements, ["SELECT 'a;b' AS value", "SELECT 2"])
+    def test_postgresql_schema_does_not_use_mysql_storage_syntax(self):
+        schema = (ROOT / "database" / "postgresql_schema.sql").read_text(encoding="utf-8").lower()
+        for forbidden in ("engine=innodb", "auto_increment", "unsigned", "information_schema", "insert ignore", "on duplicate key"):
+            self.assertNotIn(forbidden, schema)
 
-        production_sql = (ROOT / "database" / "production" / "20260924_001_security_foundation.sql").read_text(encoding="utf-8")
-        stripped = list(strip_database_switches(iter_mysql_statements(production_sql)))
-        self.assertFalse(any(re.search(r"\bUSE\s+localconnect_db\b", statement, re.I) for statement in stripped))
-
-    def test_forward_migration_set_excludes_preflight_and_rollback(self):
-        forward = []
-        pattern = re.compile(r"^\d{8}_\d{3}_[a-z0-9_]+\.sql$")
-        for path in sorted((ROOT / "database" / "production").glob("*.sql")):
-            if path.stem.endswith(("_preflight", "_rollback")):
-                continue
-            if pattern.match(path.name):
-                forward.append(path.name)
-        self.assertEqual(
-            forward,
-            [
-                "20260924_001_security_foundation.sql",
-                "20260924_002_payment_methods.sql",
-                "20260924_003_checkout_webhooks.sql",
-                "20260924_004_performance_reliability.sql",
-                "20260924_005_production_hardening.sql",
-            ],
-        )
+    def test_postgresql_bootstrap_files_are_present(self):
+        self.assertTrue((ROOT / "database" / "postgresql_schema.sql").exists())
+        self.assertTrue((ROOT / "scripts" / "init_db.py").exists())
+        self.assertTrue((ROOT / "scripts" / "check_db_schema.py").exists())
+        self.assertIn("postgresql+psycopg", (ROOT / "config" / "settings.py").read_text(encoding="utf-8"))
 
     def test_critical_effective_statuses_are_present(self):
         expected_literals = {

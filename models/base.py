@@ -1,15 +1,15 @@
 from __future__ import annotations
 
-from sqlalchemy.dialects import mysql
-
 from extensions import db
 
-
-BIGINT_UNSIGNED = db.BigInteger().with_variant(mysql.BIGINT(unsigned=True), "mysql")
-INT_UNSIGNED = db.Integer().with_variant(mysql.INTEGER(unsigned=True), "mysql")
-SMALLINT_UNSIGNED = db.SmallInteger().with_variant(mysql.SMALLINT(unsigned=True), "mysql")
-TINYINT_UNSIGNED = db.SmallInteger().with_variant(mysql.TINYINT(unsigned=True), "mysql")
-TINYINT = db.SmallInteger().with_variant(mysql.TINYINT(), "mysql")
+# Keep these aliases backend-neutral.  The application only needs integer
+# identifiers/counters; UNSIGNED/TINYINT are MySQL-specific concepts and are
+# intentionally not emitted for PostgreSQL.
+BIGINT_UNSIGNED = db.BigInteger()
+INT_UNSIGNED = db.Integer()
+SMALLINT_UNSIGNED = db.SmallInteger()
+TINYINT_UNSIGNED = db.SmallInteger()
+TINYINT = db.SmallInteger()
 
 
 def enum_type(name: str, *values: str):
@@ -26,5 +26,5 @@ class TimestampMixin:
         db.DateTime,
         nullable=False,
         server_default=now_default(),
-        server_onupdate=now_default(),
+        onupdate=now_default(),
     )

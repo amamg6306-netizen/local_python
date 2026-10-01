@@ -76,7 +76,7 @@ class PaymentMethod(db.Model):
     created_by = db.Column(BIGINT_UNSIGNED, db.ForeignKey("users.id", ondelete="RESTRICT", name="fk_payment_method_created_by"), nullable=False)
     updated_by = db.Column(BIGINT_UNSIGNED, db.ForeignKey("users.id", ondelete="RESTRICT", name="fk_payment_method_updated_by"), nullable=False)
     created_at = db.Column(db.DateTime, nullable=False, server_default=now_default())
-    updated_at = db.Column(db.DateTime, nullable=False, server_default=now_default(), server_onupdate=now_default())
+    updated_at = db.Column(db.DateTime, nullable=False, server_default=now_default(), onupdate=now_default())
 
 
 class Payment(db.Model, TimestampMixin):
@@ -167,7 +167,7 @@ class CheckoutIntent(db.Model):
     payment_id = db.Column(BIGINT_UNSIGNED, db.ForeignKey("payments.id", ondelete="SET NULL", name="fk_checkout_payment"))
     expires_at = db.Column(db.DateTime, nullable=False)
     created_at = db.Column(db.DateTime, nullable=False, server_default=now_default())
-    updated_at = db.Column(db.DateTime, nullable=False, server_default=now_default(), server_onupdate=now_default())
+    updated_at = db.Column(db.DateTime, nullable=False, server_default=now_default(), onupdate=now_default())
 
 
 class PaymentStatusHistory(db.Model):
@@ -249,7 +249,7 @@ class PaymentReconciliationJob(db.Model):
     locked_at = db.Column(db.DateTime)
     last_error = db.Column(db.String(500))
     created_at = db.Column(db.DateTime, nullable=False, server_default=now_default())
-    updated_at = db.Column(db.DateTime, nullable=False, server_default=now_default(), server_onupdate=now_default())
+    updated_at = db.Column(db.DateTime, nullable=False, server_default=now_default(), onupdate=now_default())
 
 
 class FeaturedListing(db.Model, TimestampMixin):
@@ -269,7 +269,7 @@ class LeadWallet(db.Model):
 
     user_id = db.Column(BIGINT_UNSIGNED, db.ForeignKey("users.id", ondelete="CASCADE", name="fk_lead_wallet_user"), primary_key=True)
     credits = db.Column(INT_UNSIGNED, nullable=False, server_default="0")
-    updated_at = db.Column(db.DateTime, nullable=False, server_default=now_default(), server_onupdate=now_default())
+    updated_at = db.Column(db.DateTime, nullable=False, server_default=now_default(), onupdate=now_default())
 
 
 class Advertisement(db.Model, TimestampMixin):

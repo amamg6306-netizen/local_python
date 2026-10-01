@@ -73,7 +73,7 @@ def test_frontend_assets_still_used() -> None:
 
 def test_runtime_dependencies_declared() -> None:
     req = text("requirements.txt")
-    for package in ("Flask==", "Flask-SQLAlchemy==", "Flask-WTF==", "PyMySQL==", "bcrypt==", "PyNaCl==", "cryptography=="):
+    for package in ("Flask==", "Flask-SQLAlchemy==", "Flask-WTF==", "psycopg[binary]==", "bcrypt==", "PyNaCl==", "cryptography=="):
         assert package in req, f"missing dependency {package}"
 
 

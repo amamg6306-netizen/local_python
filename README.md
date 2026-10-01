@@ -1,13 +1,13 @@
 # LocalConnect
 
-LocalConnect is a local-services marketplace migrated from native PHP to a production-oriented Python/Flask application while preserving the existing HTML/CSS/JavaScript UI, legacy `.php` URLs, MySQL/MariaDB data model, roles, workflows and billing behavior.
+LocalConnect is a local-services marketplace migrated from native PHP to a production-oriented Python/Flask application while preserving the existing HTML/CSS/JavaScript UI, legacy `.php` URLs, PostgreSQL data model, roles, workflows and billing behavior.
 
 ## Production stack
 
 - Python 3.13.15
 - Flask + Jinja2
 - Flask-SQLAlchemy / SQLAlchemy
-- PyMySQL with external MySQL/MariaDB
+- psycopg 3 with PostgreSQL (Render PostgreSQL-compatible)
 - Flask-WTF CSRF protection
 - Gunicorn
 - Existing HTML5/CSS3/vanilla JavaScript, Bootstrap and Font Awesome assets
@@ -23,7 +23,7 @@ config/settings.py         environment-driven application configuration
 extensions.py              SQLAlchemy and CSRF extensions
 routes/                     public/auth/customer/provider/business/admin/billing/API/webhook routes
 services/                   auth, marketplace, billing and storage business logic
-models/                     SQLAlchemy mappings for the effective MySQL schema
+models/                     SQLAlchemy mappings for the effective PostgreSQL schema
 templates/                  Jinja2 templates preserving the existing UI
 assets/                     existing CSS, JavaScript and static images
 database/                   canonical schema, production migrations and schema manifest
@@ -48,7 +48,7 @@ pip install -r requirements.txt
 
 Copy `.env.example` to a local `.env` or export the corresponding environment variables. Do not commit real secrets.
 
-For local MySQL/MariaDB, configure either `DATABASE_URL` or `DB_HOST`, `DB_PORT`, `DB_NAME`, `DB_USER` and `DB_PASSWORD`.
+For local PostgreSQL, configure either `DATABASE_URL` or `DB_HOST`, `DB_PORT`, `DB_NAME`, `DB_USER` and `DB_PASSWORD`. The default PostgreSQL port is `5432`.
 
 For an empty development database:
 
@@ -57,7 +57,7 @@ python scripts/init_db.py
 python scripts/init_db.py --yes
 ```
 
-For an existing database, inspect migration status first and back up production data before applying anything:
+For an existing database, inspect schema status first and back up production data before applying anything:
 
 ```bash
 python scripts/migrate_db.py
@@ -108,9 +108,9 @@ Authorization is enforced server-side. Browser form mutations are CSRF-protected
 
 ## Database
 
-The effective MySQL/MariaDB schema contains the audited marketplace, auth/security, billing and subscription tables. Production code does not use `db.create_all()` as a migration system. Use the versioned SQL migration runner and schema checker.
+The effective PostgreSQL schema contains the audited marketplace, auth/security, billing and subscription tables. `scripts/init_db.py` uses SQLAlchemy metadata to create missing PostgreSQL objects non-destructively and seeds the reference catalogue/plans. `scripts/check_db_schema.py` verifies the live schema against the manifest.
 
-Runtime DB credentials should be least-privilege. Migration credentials can be supplied separately where the managed database requires elevated DDL permissions.
+Runtime DB credentials should be least-privilege. PostgreSQL DDL bootstrap runs during Render pre-deploy and therefore requires a database role permitted to create the application schema.
 
 ## Tests
 
@@ -124,7 +124,7 @@ python scripts/check_config.py
 python scripts/check_db_schema.py
 ```
 
-Runtime tests that require Flask/PyMySQL and database connectivity must run in an environment where dependencies are installable and the intended MySQL/MariaDB instance is reachable.
+Runtime tests that require Flask/psycopg and database connectivity must run in an environment where dependencies are installable and the intended PostgreSQL instance is reachable.
 
 ## Render deployment
 
@@ -139,7 +139,7 @@ Runtime tests that require Flask/PyMySQL and database connectivity must run in a
 
 The cron service reuses the web service database/payment secrets, does not require the upload persistent disk, and drains bounded payment-reconciliation jobs after transient processing failures.
 
-Set all `sync: false` values in the Render dashboard before deployment. Initialize/apply the database schema safely before the pre-deploy schema gate is expected to pass. See `docs/DEPLOYMENT.md`.
+Set all `sync: false` values in the Render dashboard before deployment. The pre-deploy command bootstraps missing PostgreSQL schema objects and then runs the schema gate. See `docs/DEPLOYMENT.md`.
 
 ## Payment safety
 

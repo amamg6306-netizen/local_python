@@ -7,11 +7,11 @@ function db_config(): array
 {
     $prod = is_production();
     return [
-        'host' => env_value('DB_HOST', $prod ? null : '127.0.0.1'),
+        'host' => env_value('DB_HOST', $prod ? null : 'dpg-daukqqh7lnhs738uu400-a'),
         'port' => env_value('DB_PORT', '3306'),
-        'name' => env_value('DB_NAME', $prod ? null : 'localconnect_db'),
-        'user' => env_value('DB_USER', $prod ? null : 'root'),
-        'pass' => env_value('DB_PASS', $prod ? null : ''),
+        'name' => env_value('DB_NAME', $prod ? null : 'python_db_0dgf'),
+        'user' => env_value('DB_USER', $prod ? null : 'python_db_0dgf_user'),
+        'pass' => env_value('DB_PASS', $prod ? null : 'hUtvSorRgbIEniNHha9OSAMMKrD7wNMN'),
     ];
 }
 

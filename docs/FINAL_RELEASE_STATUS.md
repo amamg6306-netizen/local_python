@@ -1,6 +1,6 @@
 # Final release status
 
-The migrated source package is prepared for a Render Native Python deployment and contains the Flask application, MySQL/MariaDB schema/migrations, preserved frontend assets, compatibility routes, production configuration, persistent upload storage, security controls and release tests.
+The migrated source package is prepared for a Render Native Python deployment and contains the Flask application, PostgreSQL schema/bootstrap, preserved frontend assets, compatibility routes, production configuration, persistent upload storage, security controls and release tests.
 
 ## Verified in the build workspace
 
@@ -18,7 +18,7 @@ The migrated source package is prepared for a Render Native Python deployment an
 
 - clean PyPI dependency installation in this container (DNS access is blocked)
 - live Flask/Gunicorn boot against the production dependency set
-- live external MySQL schema/connectivity
+- live Render PostgreSQL schema/connectivity
 - SMTP delivery
 - Razorpay sandbox/live merchant acceptance
 - Render build/runtime success and live URL smoke tests
@@ -36,4 +36,8 @@ A fresh final audit found and fixed additional reliability/security gaps before 
 - added a bounded Render cron reconciliation worker for failed/transient payment reconciliation;
 - changed expired-subscription cleanup to a bulk SQL update to avoid materializing historical rows in request memory.
 
-Fresh workspace verification after these fixes: 83 Python tests passed, 20 dependency/runtime-gated tests skipped, 18 subtests passed, and 0 tests failed. PHP syntax (93/93), JavaScript syntax, 62 Jinja parses, 25 SQL files / 490 statements, secret scanning, retained Phase 1–6 regression suites, Render YAML parsing, and original PHP/CSS/JS/image byte parity all pass. Runtime/live infrastructure limitations listed below remain unchanged.
+PostgreSQL conversion verification in this workspace: Python source compilation passed; Render YAML parsed successfully; the PostgreSQL schema contains 32 tables, 28 enum types, 61 indexes and 7 deferred foreign-key statements; the canonical PostgreSQL schema copies have identical SHA-256 hashes; selected authentication, configuration, release-recheck and database static tests passed. A live Render/PostgreSQL connection was not available in this workspace, so live database connectivity is not claimed.
+
+## PostgreSQL conversion
+
+The deployment database layer was converted from MySQL/MariaDB to PostgreSQL: `psycopg` 3 is pinned, `DATABASE_URL` accepts Render PostgreSQL URLs, SQLAlchemy model types are backend-neutral, the live schema checker uses SQLAlchemy inspection, and Render pre-deploy bootstraps missing schema objects before verification.
