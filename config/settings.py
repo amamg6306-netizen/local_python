@@ -97,6 +97,10 @@ def database_uri(production: bool) -> str:
             pass
         elif production:
             raise RuntimeError("DATABASE_URL must use PostgreSQL via the postgresql+psycopg driver in production.")
+        if production:
+            parsed = urlsplit(normalized)
+            if parsed.hostname and parsed.hostname.lower() in {"127.0.0.1", "localhost", "::1"}:
+                raise RuntimeError("Production DATABASE_URL must not point to localhost/127.0.0.1. Use the Render PostgreSQL Internal Database URL.")
         return normalized
 
     host = env_value("DB_HOST", None if production else "127.0.0.1")
@@ -111,6 +115,8 @@ def database_uri(production: bool) -> str:
         raise RuntimeError("Database configuration is incomplete. Configure DATABASE_URL or DB_HOST/DB_NAME/DB_USER/DB_PASSWORD.")
 
     host = host or "127.0.0.1"
+    if production and host.strip().lower() in {"127.0.0.1", "localhost", "::1"}:
+        raise RuntimeError("Production DB_HOST must not be localhost/127.0.0.1. Use the Render PostgreSQL host or DATABASE_URL.")
     name = name or "localconnect_db"
     user = user or "postgres"
     password = password or ""
@@ -239,7 +245,7 @@ class BaseConfig:
 
     SECRET_KEY = resolve_secret_key(False)
 
-    SQLALCHEMY_DATABASE_URI = database_uri(False)
+    SQLALCHEMY_DATABASE_URI = database_uri(runtime.production)
     SQLALCHEMY_TRACK_MODIFICATIONS = False
     _db_connect_args: dict[str, Any] = {
         "connect_timeout": env_int("DB_CONNECT_TIMEOUT", 10, minimum=1, maximum=120),
