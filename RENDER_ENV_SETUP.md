@@ -47,3 +47,7 @@ Never put actual passwords, API secrets, webhook secrets, or production `SECRET_
 ## Important production rule
 
 `DATABASE_URL` must be the actual Render PostgreSQL **Internal Database URL**. Do not set `DATABASE_URL` or `DB_HOST` to `127.0.0.1`, `localhost`, or `::1`. The application now fails fast with a clear configuration error instead of attempting a localhost connection.
+
+## Runtime diagnostic
+
+At startup the application logs the resolved PostgreSQL driver, host, port, and database name, without logging the username or password. On Render, a missing `DATABASE_URL` no longer falls back to `127.0.0.1`; the service fails with a configuration error instead.

@@ -103,7 +103,11 @@ def database_uri(production: bool) -> str:
                 raise RuntimeError("Production DATABASE_URL must not point to localhost/127.0.0.1. Use the Render PostgreSQL Internal Database URL.")
         return normalized
 
-    host = env_value("DB_HOST", None if production else "127.0.0.1")
+    # On Render, never silently use a development localhost fallback.
+    # If DATABASE_URL is missing, use explicit DB_* values if supplied;
+    # otherwise fail with a configuration error before SQLAlchemy connects.
+    on_render = env_bool("RENDER", False)
+    host = env_value("DB_HOST", None if (production or on_render) else "127.0.0.1")
     port = env_value("DB_PORT", "5432") or "5432"
     name = env_value("DB_NAME", None if production else "localconnect_db")
     user = env_value("DB_USER", None if production else "postgres")
@@ -111,8 +115,11 @@ def database_uri(production: bool) -> str:
     if password is None:
         password = env_value("DB_PASS", None if production else "")
 
-    if production and (not host or not name or not user or password is None):
-        raise RuntimeError("Database configuration is incomplete. Configure DATABASE_URL or DB_HOST/DB_NAME/DB_USER/DB_PASSWORD.")
+    if (production or on_render) and (not host or not name or not user or password is None):
+        raise RuntimeError(
+            "Database configuration is incomplete. On Render, set DATABASE_URL to the PostgreSQL Internal Database URL "
+            "or provide DB_HOST/DB_NAME/DB_USER/DB_PASSWORD explicitly."
+        )
 
     host = host or "127.0.0.1"
     if production and host.strip().lower() in {"127.0.0.1", "localhost", "::1"}:
@@ -139,7 +146,16 @@ class RuntimeSettings:
 
 
 def runtime_settings() -> RuntimeSettings:
-    app_env = (env_value("APP_ENV", "development") or "development").strip().lower()
+    # Render exposes RENDER=true at runtime. If APP_ENV was accidentally
+    # omitted from the service, treat Render as production instead of
+    # silently falling back to development-only localhost defaults.
+    configured_env = env_value("APP_ENV")
+    if configured_env:
+        app_env = configured_env.strip().lower()
+    elif env_bool("RENDER", False):
+        app_env = "production"
+    else:
+        app_env = "development"
     production = app_env == "production"
     trusted = tuple(
         item.strip() for item in (env_value("TRUSTED_PROXY_IPS", "") or "").split(",") if item.strip()

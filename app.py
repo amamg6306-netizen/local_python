@@ -1,7 +1,7 @@
 from __future__ import annotations
 
 from datetime import datetime
-from urllib.parse import urlencode
+from urllib.parse import urlencode, urlsplit
 
 from flask import Flask, request
 from flask_wtf.csrf import generate_csrf
@@ -35,6 +35,19 @@ def create_app(config_object=None) -> Flask:
             raise RuntimeError("Production configuration invalid: " + " | ".join(errors))
 
     configure_logging(app)
+    # Log only the resolved database target (never credentials) so a Render
+    # deployment can be diagnosed from its startup logs.
+    try:
+        db_target = urlsplit(app.config["SQLALCHEMY_DATABASE_URI"])
+        app.logger.info(
+            "Database target: driver=%s host=%s port=%s database=%s",
+            db_target.scheme,
+            db_target.hostname or "<missing>",
+            db_target.port or 5432,
+            (db_target.path or "/").lstrip("/") or "<missing>",
+        )
+    except Exception:
+        app.logger.exception("Unable to inspect resolved database target")
     if app.config.get("UPLOAD_STORAGE_BACKEND") != "filesystem":
         raise RuntimeError("Unsupported upload storage backend.")
     # Storage setup reads current_app configuration, so it must execute
